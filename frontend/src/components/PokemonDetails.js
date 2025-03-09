@@ -1,11 +1,10 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PokemonContext } from '../context/PokemonContext';
-import StatBar from './StatBar';
 
 /**
  * Componente para mostrar los detalles de un Pokémon
- * Versión corregida para manejar diferentes estructuras de datos
+ * Versión simplificada sin estadísticas
  */
 const PokemonDetails = ({ pokemon }) => {
   const navigate = useNavigate();
@@ -25,24 +24,7 @@ const PokemonDetails = ({ pokemon }) => {
     );
   }
   
-  // Verificar si el Pokémon ya está en la colección
   const alreadyInCollection = userCollection.includes(pokemon.name);
-  
-  // Colores por tipo para estadísticas
-  const statColors = {
-    hp: "bg-green-500",
-    attack: "bg-red-500",
-    defense: "bg-blue-500",
-    spAtk: "bg-purple-500",
-    spDef: "bg-indigo-500",
-    speed: "bg-yellow-500"
-  };
-  
-  // Tipos para mostrar (con validación adicional)
-  const types = [
-    pokemon.type1 && { name: pokemon.type1, main: true },
-    pokemon.type2 && pokemon.type2 !== "" && { name: pokemon.type2, main: false }
-  ].filter(Boolean);
   
   // Mapa de colores para cada tipo de Pokémon
   const typeColors = {
@@ -66,30 +48,19 @@ const PokemonDetails = ({ pokemon }) => {
     "Fairy": "bg-pink-100 text-pink-800 border-pink-200"
   };
   
-  // Valores seguros para mostrar (con valores por defecto)
-  const safeValues = {
-    name: pokemon.name || "Desconocido",
-    type1: pokemon.type1 || "Normal",
-    type2: pokemon.type2 || "",
-    generation: pokemon.generation || 1,
-    total: pokemon.total || (pokemon.hp + pokemon.attack + pokemon.defense + pokemon.spAtk + pokemon.spDef + pokemon.speed) || 0,
-    legendary: !!pokemon.legendary,
-    ability: pokemon.ability || "Desconocida",
-    hp: pokemon.hp || 0,
-    attack: pokemon.attack || 0,
-    defense: pokemon.defense || 0,
-    spAtk: pokemon.spAtk || 0,
-    spDef: pokemon.spDef || 0,
-    speed: pokemon.speed || 0
-  };
+  // Tipos para mostrar (con validación adicional)
+  const types = [
+    pokemon.type1 && { name: pokemon.type1, main: true },
+    pokemon.type2 && pokemon.type2 !== "" && { name: pokemon.type2, main: false }
+  ].filter(Boolean);
   
   return (
     <div className="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg backdrop-blur-sm">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold text-blue-900">
-            {safeValues.name}
-            {safeValues.legendary && <span className="ml-2 text-yellow-500">★</span>}
+            {pokemon.name}
+            {pokemon.legendary && <span className="ml-2 text-yellow-500">★</span>}
           </h1>
           
           <div className="flex mt-2 space-x-2">
@@ -112,40 +83,28 @@ const PokemonDetails = ({ pokemon }) => {
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div className="mt-6">
         <div>
           <h2 className="text-lg font-semibold text-blue-800 mb-3">Información básica</h2>
           <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Generación</p>
-                <p className="font-medium">{safeValues.generation}</p>
+                <p className="font-medium">{pokemon.generation}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total</p>
-                <p className="font-medium">{safeValues.total}</p>
+                <p className="font-medium">{pokemon.total}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Legendario</p>
-                <p className="font-medium">{safeValues.legendary ? "Sí" : "No"}</p>
+                <p className="font-medium">{pokemon.legendary ? "Sí" : "No"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Habilidad</p>
-                <p className="font-medium">{safeValues.ability}</p>
+                <p className="font-medium">{pokemon.ability || "Desconocida"}</p>
               </div>
             </div>
-          </div>
-        </div>
-        
-        <div>
-          <h2 className="text-lg font-semibold text-blue-800 mb-3">Estadísticas</h2>
-          <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
-            <StatBar label="HP" value={safeValues.hp} color={statColors.hp} />
-            <StatBar label="Ataque" value={safeValues.attack} color={statColors.attack} />
-            <StatBar label="Defensa" value={safeValues.defense} color={statColors.defense} />
-            <StatBar label="Ataque Especial" value={safeValues.spAtk} color={statColors.spAtk} />
-            <StatBar label="Defensa Especial" value={safeValues.spDef} color={statColors.spDef} />
-            <StatBar label="Velocidad" value={safeValues.speed} color={statColors.speed} />
           </div>
         </div>
       </div>
