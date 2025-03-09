@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+/frontend/node_modules/
+/frontend/.pnp
+/frontend/.pnp.js
+
+# Testing
+/frontend/coverage
+
+# Producción
+/frontend/build
+
+# Archivos de Java compilados
+/backend/target/
+*.class
+
+# Archivos de configuración IDE
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Archivos de entorno
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
