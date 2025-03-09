@@ -10,6 +10,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Implementación de MapaPokemons utilizando HashMap.
+ * Autor: Fatima Navarro
  */
 public class HashMapPokemon implements MapaPokemons {
     private Map<String, Pokemon> pokemonMap = new HashMap<>();

@@ -10,6 +10,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Implementación de MapaPokemons utilizando TreeMap.
+ * Autor: Fatima Navarro
  */
 public class TreeMapPokemon implements MapaPokemons {
     private Map<String, Pokemon> pokemonMap = new TreeMap<>();

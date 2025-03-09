@@ -11,6 +11,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Clase que gestiona la colección de Pokémon del usuario.
+ * Autor: Fatima Navarro
  */
 public class ColeccionUsuario {
     private Set<String> pokemonesUsuario = new HashSet<>();

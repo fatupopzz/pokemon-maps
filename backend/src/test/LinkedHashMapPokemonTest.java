@@ -15,6 +15,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Pruebas para la implementación LinkedHashMapPokemon
+ * Autor: Fatima Navarro
  */
 public class LinkedHashMapPokemonTest {
     

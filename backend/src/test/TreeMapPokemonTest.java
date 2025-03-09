@@ -14,6 +14,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Pruebas para la implementación TreeMapPokemon
+ * Autor: Fatima Navarro
  */
 public class TreeMapPokemonTest {
     

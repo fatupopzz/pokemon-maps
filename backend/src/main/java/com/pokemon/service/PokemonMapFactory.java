@@ -2,6 +2,7 @@ package com.pokemon.service;
 
 /**
  * Implementación del patrón Factory para crear diferentes tipos de MapaPokemons.
+ * Autor: Fatima Navarro
  */
 public class PokemonMapFactory {
     

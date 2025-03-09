@@ -7,6 +7,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Interfaz que define las operaciones básicas para un mapa de Pokémon.
+ * Autor: Fatima Navarro
  */
 public interface MapaPokemons {
     

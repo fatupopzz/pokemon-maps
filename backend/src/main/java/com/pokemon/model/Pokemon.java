@@ -2,6 +2,8 @@ package com.pokemon.model;
 
 /**
  * Clase que representa a un Pokémon con sus atributos según el CSV pokemon_data_pokeapi.csv.
+ * Se utiliza para almacenar y mostrar información de los Pokémon.
+ * Autor: Fatima Navarro
  */
 public class Pokemon {
     private String name;

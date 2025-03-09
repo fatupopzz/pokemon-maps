@@ -10,6 +10,7 @@ import com.pokemon.model.Pokemon;
 
 /**
  * Implementación de MapaPokemons utilizando LinkedHashMap.
+ * Autor: Fatima Navarro
  */
 public class LinkedHashMapPokemon implements MapaPokemons {
     private Map<String, Pokemon> pokemonMap = new LinkedHashMap<>();

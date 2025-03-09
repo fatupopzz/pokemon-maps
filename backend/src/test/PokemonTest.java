@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Pruebas para la clase Pokemon
+ * Autor: Fatima Navarro
  */
 public class PokemonTest {
     

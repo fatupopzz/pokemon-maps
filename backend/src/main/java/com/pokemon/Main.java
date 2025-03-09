@@ -9,6 +9,7 @@ import com.pokemon.util.LectorCSV;
 
 /**
  * Clase principal que ejecuta la aplicación en modo consola.
+ * Autor: Fatima Navarro
  */
 public class Main {
     private static MapaPokemons mapaPokemons;

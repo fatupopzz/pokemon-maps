@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Clase que representa una respuesta API para Pokémon.
  * Se utiliza para enviar respuestas formateadas a las solicitudes del frontend.
+ * Autor: Fatima Navarro
  */
 public class PokemonResponse {
     private boolean success;
