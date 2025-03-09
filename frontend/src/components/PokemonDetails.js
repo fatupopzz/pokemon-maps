@@ -4,7 +4,7 @@ import { PokemonContext } from '../context/PokemonContext';
 
 /**
  * Componente para mostrar los detalles de un Pokémon
- * Versión simplificada sin estadísticas
+ * (versión sin estadísticas)
  */
 const PokemonDetails = ({ pokemon }) => {
   const navigate = useNavigate();
@@ -25,6 +25,12 @@ const PokemonDetails = ({ pokemon }) => {
   }
   
   const alreadyInCollection = userCollection.includes(pokemon.name);
+  
+  // Tipos para mostrar (con validación adicional)
+  const types = [
+    pokemon.type1 && { name: pokemon.type1, main: true },
+    pokemon.type2 && pokemon.type2 !== "" && { name: pokemon.type2, main: false }
+  ].filter(Boolean);
   
   // Mapa de colores para cada tipo de Pokémon
   const typeColors = {
@@ -47,12 +53,6 @@ const PokemonDetails = ({ pokemon }) => {
     "Steel": "bg-zinc-100 text-zinc-800 border-zinc-200",
     "Fairy": "bg-pink-100 text-pink-800 border-pink-200"
   };
-  
-  // Tipos para mostrar (con validación adicional)
-  const types = [
-    pokemon.type1 && { name: pokemon.type1, main: true },
-    pokemon.type2 && pokemon.type2 !== "" && { name: pokemon.type2, main: false }
-  ].filter(Boolean);
   
   return (
     <div className="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg backdrop-blur-sm">
@@ -83,7 +83,7 @@ const PokemonDetails = ({ pokemon }) => {
         </button>
       </div>
       
-      <div className="mt-6">
+      <div className="grid grid-cols-1 gap-6 mt-6">
         <div>
           <h2 className="text-lg font-semibold text-blue-800 mb-3">Información básica</h2>
           <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
@@ -102,7 +102,7 @@ const PokemonDetails = ({ pokemon }) => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Habilidad</p>
-                <p className="font-medium">{pokemon.ability || "Desconocida"}</p>
+                <p className="font-medium">{pokemon.ability}</p>
               </div>
             </div>
           </div>
