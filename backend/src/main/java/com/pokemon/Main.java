@@ -1,10 +1,11 @@
 package com.pokemon;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 import com.pokemon.service.MapaPokemons;
 import com.pokemon.service.PokemonMapFactory;
 import com.pokemon.util.LectorCSV;
-import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * Clase principal que ejecuta la aplicación en modo consola.
@@ -15,13 +16,15 @@ public class Main {
     
     public static void main(String[] args) {
         try {
-            System.out.println("¡Bienvenido a la aplicación de Pokémon Maps!");
+            System.out.println("Bienvenido, escoge tu tipo de mapa de Pokémon");
             
             // Selección del tipo de Map
+            System.out.println("----------------------------------------------");
             System.out.println("Seleccione la implementación de Map a utilizar:");
             System.out.println("1) HashMap - Acceso rápido, sin orden específico");
             System.out.println("2) TreeMap - Elementos ordenados por nombre");
             System.out.println("3) LinkedHashMap - Mantiene el orden de inserción");
+            System.out.println("----------------------------------------------");
             
             int opcionMap = obtenerEntero("Ingrese su opción (1-3): ", 1, 3);
             
@@ -68,13 +71,14 @@ public class Main {
         boolean salir = false;
         
         while (!salir) {
-            System.out.println("\n==== MENÚ PRINCIPAL ====");
+            System.out.println("\n======== MENÚ PRINCIPAL =========");
             System.out.println("1. Mostrar todos los Pokémon");
             System.out.println("2. Buscar Pokémon por nombre");
             System.out.println("3. Mostrar Pokémon ordenados por tipo");
             System.out.println("4. Buscar Pokémon por habilidad");
             System.out.println("5. Exportar datos a JSON");
             System.out.println("6. Salir");
+            System.out.println("=================================");
             
             int opcion = obtenerEntero("Seleccione una opción (1-6): ", 1, 6);
             
