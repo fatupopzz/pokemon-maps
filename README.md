@@ -8,9 +8,7 @@ Este proyecto implementa un explorador de datos de Pokémon utilizando el concep
 
 El objetivo principal de este proyecto es demostrar la implementación y uso de diferentes tipos de Maps (HashMap, TreeMap y LinkedHashMap) para almacenar y manipular datos de Pokémon. La aplicación permite visualizar, buscar y filtrar información de Pokémon de manera eficiente.
 
-### Relación con la Asignación Original
-
-Este proyecto cumple con los requisitos de la Hoja de Trabajo No. 6 de Algoritmos y Estructura de Datos (CC2016), que solicita:
+### esta hoja tiene
 
 1. **Implementación de Maps**: Se implementaron las tres variantes de Map solicitadas:
    - **HashMap**: Acceso rápido O(1), sin orden específico
@@ -107,7 +105,7 @@ Para la operación #4 (mostrar todos los Pokémon ordenados por tipo):
 
 La operación más eficiente es la búsqueda por nombre, que es O(1) con HashMap, O(log n) con TreeMap y O(1) con LinkedHashMap.
 
-## Demo en vivo
+## Demo en vivo (es un simulador)
 
 [En githubpages ](https://fatupopzz.github.io/pokemon-maps)
 
@@ -142,6 +140,4 @@ Se implementaron pruebas unitarias para verificar el correcto funcionamiento de 
 
 
 
-## Licencia
 
-Este proyecto está bajo la Licencia MIT.
