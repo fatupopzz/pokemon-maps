@@ -1,6 +1,8 @@
 # Pokémon Explorer
 
-Este proyecto implementa un explorador de datos de Pokémon utilizando el concepto de Maps del Java Collection Framework adaptado a un entorno web con React.
+Este proyecto implementa un explorador de datos de Pokémon utilizando el concepto de Maps del Java Collection Framework adaptado a un entorno web con React. 
+
+# (para correr el backend, mejor clonen la rama MASTER)
 
 ![image](https://github.com/user-attachments/assets/f60632a5-91cf-4089-9f15-0af6c3b3a65d)
 
