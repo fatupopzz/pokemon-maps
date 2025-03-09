@@ -7,21 +7,29 @@ import Papa from 'papaparse';
  */
 export const fetchAllPokemons = async (mapType) => {
   try {
-    // En un caso real, haríamos una llamada a la API Java que hemos creado
-    // Aquí simularemos cargar el CSV directamente (en producción se manejaría desde el backend)
-    const csvUrl = process.env.PUBLIC_URL + '/data/pokemon_data_pokeapi.csv';
+    // Usar la URL basada en PUBLIC_URL para permitir rutas relativas en GitHub Pages
+    const csvUrl = `${process.env.PUBLIC_URL}/data/pokemon_data_pokeapi.csv`;
+    
+    console.log('Intentando cargar CSV desde:', csvUrl);
     
     const response = await fetch(csvUrl);
+    console.log('Estado de la respuesta:', response.status, response.statusText);
+    
     if (!response.ok) {
-      throw new Error(`No se pudo cargar el archivo: ${response.statusText}`);
+      throw new Error(`No se pudo cargar el archivo: ${response.status} ${response.statusText}`);
     }
     
     const csvText = await response.text();
+    console.log('Primeros 100 caracteres del CSV:', csvText.substring(0, 100));
     
     // Convertir el CSV a un objeto según el tipo de Map
     return parseCSVToMap(csvText, mapType);
   } catch (error) {
     console.error('Error en fetchAllPokemons:', error);
+    // Registrar más detalles del error para depuración
+    if (error instanceof TypeError) {
+      console.error('Error de red o CORS. Detalles:', error.message);
+    }
     throw error;
   }
 };
@@ -40,14 +48,22 @@ const parseCSVToMap = (csvText, mapType) => {
       skipEmptyLines: true,
       complete: (results) => {
         try {
+          console.log('Resultados de Papa Parse:', {
+            rows: results.data.length,
+            firstRow: results.data[0],
+            fields: results.meta.fields
+          });
+          
           // Transformar los datos según el tipo de Map
           const pokemonMap = createPokemonMap(results.data, mapType);
           resolve(pokemonMap);
         } catch (error) {
+          console.error('Error procesando los datos CSV:', error);
           reject(error);
         }
       },
       error: (error) => {
+        console.error('Error en Papa Parse:', error);
         reject(error);
       }
     });
@@ -96,6 +112,8 @@ const createPokemonMap = (pokemonArray, mapType) => {
       throw new Error(`Tipo de mapa no válido: ${mapType}`);
   }
   
+  console.log(`Creado ${mapType} con ${Object.keys(pokemonMap).length} Pokémon`);
+  
   return pokemonMap;
 };
 
@@ -105,20 +123,18 @@ const createPokemonMap = (pokemonArray, mapType) => {
  * @returns {Object} - Datos del Pokémon transformados
  */
 const transformPokemonData = (rawPokemon) => {
+  console.log('Transformando datos de Pokémon raw:', JSON.stringify(rawPokemon).substring(0, 100));
   return {
     name: rawPokemon.Name,
+    pokedexNumber: rawPokemon["Pokedex Number"],
     type1: rawPokemon.Type1,
     type2: rawPokemon.Type2 || "",
-    total: rawPokemon.Total,
-    hp: rawPokemon.HP,
-    attack: rawPokemon.Attack,
-    defense: rawPokemon.Defense,
-    spAtk: rawPokemon["Sp. Atk"],
-    spDef: rawPokemon["Sp. Def"],
-    speed: rawPokemon.Speed,
+    classification: rawPokemon.Classification,
+    height: rawPokemon["Height (m)"],
+    weight: rawPokemon["Weight (kg)"],
+    abilities: rawPokemon.Abilities || "Unknown",
     generation: rawPokemon.Generation,
-    legendary: rawPokemon.Legendary === "True" || rawPokemon.Legendary === true,
-    ability: rawPokemon.Ability || "Unknown"
+    legendary: rawPokemon["Legendary Status"] === "True" || rawPokemon["Legendary Status"] === true
   };
 };
 
@@ -146,12 +162,12 @@ export const searchPokemonsByAbility = (pokemons, ability) => {
   if (!ability) return Object.values(pokemons);
   
   return Object.values(pokemons).filter(pokemon => 
-    pokemon.ability.toLowerCase().includes(ability.toLowerCase())
+    pokemon.abilities.toLowerCase().includes(ability.toLowerCase())
   );
 };
 
 /**
- * Ordena los Pokémon por tipo
+ * Agrupa los Pokémon por tipo
  * @param {Array} pokemons - Array de Pokémon
  * @returns {Object} - Pokémon agrupados por tipo
  */
