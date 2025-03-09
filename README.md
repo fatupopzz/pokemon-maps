@@ -2,6 +2,8 @@
 
 Este proyecto implementa un explorador de datos de Pokémon utilizando el concepto de Maps del Java Collection Framework adaptado a un entorno web con React.
 
+![image](https://github.com/user-attachments/assets/f60632a5-91cf-4089-9f15-0af6c3b3a65d)
+
 ## Descripción del Proyecto
 
 El objetivo principal de este proyecto es demostrar la implementación y uso de diferentes tipos de Maps (HashMap, TreeMap y LinkedHashMap) para almacenar y manipular datos de Pokémon. La aplicación permite visualizar, buscar y filtrar información de Pokémon de manera eficiente.
@@ -107,7 +109,7 @@ La operación más eficiente es la búsqueda por nombre, que es O(1) con HashMap
 
 ## Demo en vivo
 
-En githubpages 
+[En githubpages ](https://fatupopzz.github.io/pokemon-maps)
 
 ## Instalación y Ejecución Local
 
