@@ -7,30 +7,23 @@ import Papa from 'papaparse';
  */
 export const fetchAllPokemons = async (mapType) => {
   try {
-    // Usar la URL basada en PUBLIC_URL para permitir rutas relativas en GitHub Pages
+    // Ruta para el CSV
     const csvUrl = `${process.env.PUBLIC_URL}/data/pokemon_data_pokeapi.csv`;
     
-    console.log('Intentando cargar CSV desde:', csvUrl);
-    
+    // Cargar el archivo CSV
     const response = await fetch(csvUrl);
-    console.log('Estado de la respuesta:', response.status, response.statusText);
-    
     if (!response.ok) {
-      throw new Error(`No se pudo cargar el archivo: ${response.status} ${response.statusText}`);
+      console.error(`Error al cargar el CSV: ${response.statusText}`);
+      return {};
     }
     
     const csvText = await response.text();
-    console.log('Primeros 100 caracteres del CSV:', csvText.substring(0, 100));
     
     // Convertir el CSV a un objeto según el tipo de Map
     return parseCSVToMap(csvText, mapType);
   } catch (error) {
     console.error('Error en fetchAllPokemons:', error);
-    // Registrar más detalles del error para depuración
-    if (error instanceof TypeError) {
-      console.error('Error de red o CORS. Detalles:', error.message);
-    }
-    throw error;
+    return {};
   }
 };
 
@@ -48,22 +41,23 @@ const parseCSVToMap = (csvText, mapType) => {
       skipEmptyLines: true,
       complete: (results) => {
         try {
-          console.log('Resultados de Papa Parse:', {
-            rows: results.data.length,
-            firstRow: results.data[0],
-            fields: results.meta.fields
-          });
+          // Ver los nombres de las columnas para debug
+          console.log("Columnas encontradas:", results.meta.fields);
+          
+          // Ver el primer Pokémon para entender la estructura
+          if (results.data.length > 0) {
+            console.log("Primer Pokémon:", results.data[0]);
+          }
           
           // Transformar los datos según el tipo de Map
           const pokemonMap = createPokemonMap(results.data, mapType);
           resolve(pokemonMap);
         } catch (error) {
-          console.error('Error procesando los datos CSV:', error);
+          console.error("Error procesando CSV:", error);
           reject(error);
         }
       },
       error: (error) => {
-        console.error('Error en Papa Parse:', error);
         reject(error);
       }
     });
@@ -79,23 +73,44 @@ const parseCSVToMap = (csvText, mapType) => {
 const createPokemonMap = (pokemonArray, mapType) => {
   let pokemonMap = {};
   
+  // Comprobar si tenemos datos
+  if (!pokemonArray || pokemonArray.length === 0) {
+    console.error("No hay datos de Pokémon para procesar");
+    return {};
+  }
+  
+  // Comprobar los nombres de las propiedades del primer Pokémon
+  const firstPokemon = pokemonArray[0];
+  const propertyNames = Object.keys(firstPokemon);
+  console.log("Nombres de propiedades:", propertyNames);
+  
   switch(mapType) {
     case "HashMap":
       // Un objeto normal en JavaScript (no garantiza orden)
       pokemonMap = pokemonArray.reduce((map, pokemon) => {
-        map[pokemon.Name] = transformPokemonData(pokemon);
+        // Buscar el campo correcto para el nombre según los datos
+        const nameField = getNameField(pokemon);
+        if (nameField) {
+          map[pokemon[nameField]] = transformPokemonData(pokemon);
+        }
         return map;
       }, {});
       break;
       
     case "TreeMap":
       // Simulamos TreeMap ordenando las claves alfabéticamente
-      const sorted = [...pokemonArray].sort((a, b) => 
-        a.Name.localeCompare(b.Name)
-      );
+      const sorted = [...pokemonArray].sort((a, b) => {
+        const nameFieldA = getNameField(a);
+        const nameFieldB = getNameField(b);
+        if (!nameFieldA || !nameFieldB) return 0;
+        return a[nameFieldA].localeCompare(b[nameFieldB]);
+      });
       
       pokemonMap = sorted.reduce((map, pokemon) => {
-        map[pokemon.Name] = transformPokemonData(pokemon);
+        const nameField = getNameField(pokemon);
+        if (nameField) {
+          map[pokemon[nameField]] = transformPokemonData(pokemon);
+        }
         return map;
       }, {});
       break;
@@ -103,7 +118,10 @@ const createPokemonMap = (pokemonArray, mapType) => {
     case "LinkedHashMap":
       // Simulamos LinkedHashMap manteniendo el orden de inserción
       pokemonMap = pokemonArray.reduce((map, pokemon) => {
-        map[pokemon.Name] = transformPokemonData(pokemon);
+        const nameField = getNameField(pokemon);
+        if (nameField) {
+          map[pokemon[nameField]] = transformPokemonData(pokemon);
+        }
         return map;
       }, {});
       break;
@@ -112,9 +130,33 @@ const createPokemonMap = (pokemonArray, mapType) => {
       throw new Error(`Tipo de mapa no válido: ${mapType}`);
   }
   
-  console.log(`Creado ${mapType} con ${Object.keys(pokemonMap).length} Pokémon`);
-  
   return pokemonMap;
+};
+
+/**
+ * Encuentra el campo correcto que contiene el nombre del Pokémon
+ * @param {Object} pokemon - Datos del Pokémon
+ * @returns {string|null} - Nombre del campo para el nombre del Pokémon
+ */
+const getNameField = (pokemon) => {
+  // Campos posibles para el nombre, en orden de prioridad
+  const possibleFields = ['name', 'Name', 'nombre', 'Nombre', 'pokemon', 'Pokemon'];
+  
+  for (const field of possibleFields) {
+    if (pokemon[field]) {
+      return field;
+    }
+  }
+  
+  // Si no encuentra ningún campo, usa la primera propiedad que no sea nula
+  for (const key in pokemon) {
+    if (pokemon[key] && typeof pokemon[key] === 'string') {
+      console.log(`Usando '${key}' como campo nombre fallback`);
+      return key;
+    }
+  }
+  
+  return null;
 };
 
 /**
@@ -123,18 +165,39 @@ const createPokemonMap = (pokemonArray, mapType) => {
  * @returns {Object} - Datos del Pokémon transformados
  */
 const transformPokemonData = (rawPokemon) => {
-  console.log('Transformando datos de Pokémon raw:', JSON.stringify(rawPokemon).substring(0, 100));
+  // Mapeo flexible que busca en diferentes nombres de campo
+  const getValue = (possibleKeys, defaultValue) => {
+    for (const key of possibleKeys) {
+      if (rawPokemon[key] !== undefined && rawPokemon[key] !== null) {
+        return rawPokemon[key];
+      }
+    }
+    return defaultValue;
+  };
+  
+  // Detectar los campos para cada propiedad
+  const nameField = getNameField(rawPokemon) || 'Name';
+  
   return {
-    name: rawPokemon.Name,
-    pokedexNumber: rawPokemon["Pokedex Number"],
-    type1: rawPokemon.Type1,
-    type2: rawPokemon.Type2 || "",
-    classification: rawPokemon.Classification,
-    height: rawPokemon["Height (m)"],
-    weight: rawPokemon["Weight (kg)"],
-    abilities: rawPokemon.Abilities || "Unknown",
-    generation: rawPokemon.Generation,
-    legendary: rawPokemon["Legendary Status"] === "True" || rawPokemon["Legendary Status"] === true
+    name: getValue([nameField, 'Name', 'nombre', 'Nombre'], 'Unknown'),
+    type1: getValue(['Type1', 'Type 1', 'Tipo1', 'Tipo 1', 'PrimaryType', 'Primary Type'], 'Normal'),
+    type2: getValue(['Type2', 'Type 2', 'Tipo2', 'Tipo 2', 'SecondaryType', 'Secondary Type'], ''),
+    total: getValue(['Total', 'total', 'Total Stats'], 0),
+    hp: getValue(['HP', 'hp', 'Hit Points', 'Health'], 0),
+    attack: getValue(['Attack', 'attack', 'Atk', 'atk', 'Ataque'], 0),
+    defense: getValue(['Defense', 'defense', 'Def', 'def', 'Defensa'], 0),
+    spAtk: getValue(['Sp. Atk', 'SpAtk', 'Sp.Atk', 'Special Attack', 'special_attack', 'sp_atk', 'Ataque Especial'], 0),
+    spDef: getValue(['Sp. Def', 'SpDef', 'Sp.Def', 'Special Defense', 'special_defense', 'sp_def', 'Defensa Especial'], 0),
+    speed: getValue(['Speed', 'speed', 'spd', 'Spd', 'Velocidad'], 0),
+    generation: getValue(['Generation', 'generation', 'gen', 'Gen', 'Generación'], 1),
+    legendary: getValue(
+      ['Legendary', 'legendary', 'is_legendary', 'IsLegendary', 'Legendario'], 
+      false
+    ) === true || getValue(
+      ['Legendary', 'legendary', 'is_legendary', 'IsLegendary', 'Legendario'], 
+      ''
+    ) === 'True',
+    ability: getValue(['Ability', 'ability', 'Abilities', 'abilities', 'Habilidad', 'habilidad'], 'Unknown')
   };
 };
 
@@ -162,18 +225,18 @@ export const searchPokemonsByAbility = (pokemons, ability) => {
   if (!ability) return Object.values(pokemons);
   
   return Object.values(pokemons).filter(pokemon => 
-    pokemon.abilities.toLowerCase().includes(ability.toLowerCase())
+    pokemon.ability && pokemon.ability.toLowerCase().includes(ability.toLowerCase())
   );
 };
 
 /**
- * Agrupa los Pokémon por tipo
+ * Ordena los Pokémon por tipo
  * @param {Array} pokemons - Array de Pokémon
  * @returns {Object} - Pokémon agrupados por tipo
  */
 export const getPokemonsByType = (pokemons) => {
   return pokemons.reduce((groups, pokemon) => {
-    const type = pokemon.type1;
+    const type = pokemon.type1 || "Unknown";
     if (!groups[type]) {
       groups[type] = [];
     }
