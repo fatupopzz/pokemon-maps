@@ -139,7 +139,9 @@ Se implementaron pruebas unitarias para verificar el correcto funcionamiento de 
 1. **Prueba de agregación de Pokémon a la colección**
 2. **Prueba de búsqueda de Pokémon por nombre**
 
+## Referencias 
 
+Claude 
 
 
 
