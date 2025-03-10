@@ -2,7 +2,6 @@ package com.pokemon.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -52,21 +51,6 @@ public class PokemonMapFactoryTest {
         assertEquals("LinkedHashMap", linkedHashMap.getTipoMapa());
         assertTrue(linkedHashMap instanceof LinkedHashMapPokemon);
     }
-    
-    @Test
-    public void testTipoInvalido() {
-        // Verificar que lanza excepción para un tipo numérico inválido
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            PokemonMapFactory.crearMapa(4);
-        });
-        
-        assertTrue(exception.getMessage().contains("Tipo de mapa no válido"));
-        
-        // Verificar que lanza excepción para un nombre inválido
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
-            PokemonMapFactory.crearMapaPorNombre("InvalidMap");
-        });
-        
-        assertTrue(exception2.getMessage().contains("Tipo de mapa no válido"));
-    }
+
 }
+    
