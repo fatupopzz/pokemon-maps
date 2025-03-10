@@ -10,42 +10,67 @@ import java.util.stream.Collectors;
 import com.pokemon.model.Pokemon;
 
 /**
- * Clase que gestiona la colección de Pokémon del usuario.
- * Autor: Fatima Navarro
+ * Gestiona la colección personal de Pokémon del usuario.
+ * Autor: Fatima Navarro - 24044
  */
 public class ColeccionUsuario {
-    private Set<String> pokemonesUsuario = new HashSet<>();
-    private MapaPokemons mapaPokemons;
+    //--------
+    // Utilizamos un HashSet para almacenar solo los nombres de los Pokémon
+    // que el usuario tiene en su colección. El uso de Set garantiza
+    // que no haya duplicados, y HashSet ofrece operaciones O(1)
+    //--------
+    private Set<String> pokemonesUsuario;
+    private MapaPokemons mapaReferencia;
     
     /**
-     * Constructor que recibe el mapa de todos los Pokémon disponibles.
+     * Constructor que recibe el mapa completo de Pokémon como referencia.
      */
-    public ColeccionUsuario(MapaPokemons mapaPokemons) {
-        this.mapaPokemons = mapaPokemons;
+    public ColeccionUsuario(MapaPokemons mapaReferencia) {
+        //--------
+        // El mapa de referencia contiene todos los Pokémon disponibles
+        // La colección del usuario es un subconjunto de éstos
+        //--------
+        this.pokemonesUsuario = new HashSet<>();
+        this.mapaReferencia = mapaReferencia;
     }
     
     /**
-     * Agrega un Pokémon a la colección del usuario por nombre.
+     * Agrega un Pokémon a la colección del usuario por su nombre.
      */
     public boolean agregarPokemon(String nombre) {
-        // Verificar si el pokemon existe en los datos
-        if (!mapaPokemons.existePokemon(nombre)) {
-            return false; // No existe en los datos
+        //--------
+        // Verificamos primero que el Pokémon exista en la base de datos
+        // Luego comprobamos que no esté ya en la colección del usuario
+        //--------
+        if (!mapaReferencia.existePokemon(nombre)) {
+            // No existe en los datos de referencia
+            return false;
         }
         
-        // Verificar si ya está en la colección
-        if (pokemonesUsuario.contains(nombre)) {
-            return false; // Ya está en la colección
-        }
-        
-        // Agregar a la colección
+        // Intentamos agregarlo (retorna false si ya existía)
         return pokemonesUsuario.add(nombre);
     }
     
     /**
-     * Obtiene la lista de nombres de Pokémon que el usuario tiene en su colección.
+     * Elimina un Pokémon de la colección del usuario por su nombre.
+     */
+    public boolean eliminarPokemon(String nombre) {
+        //--------
+        // Simple operación de eliminación del Set
+        // Retorna true si existía y se eliminó, false si no estaba
+        //--------
+        return pokemonesUsuario.remove(nombre);
+    }
+    
+    /**
+     * Obtiene la lista de nombres de Pokémon en la colección.
      */
     public Set<String> obtenerNombresPokemon() {
+        //--------
+        // Devuelve una referencia directa al Set de nombres
+        // El usuario no puede modificar la colección a través de este método
+        // debido a la encapsulación de los métodos de modificación
+        //--------
         return pokemonesUsuario;
     }
     
@@ -57,12 +82,16 @@ public class ColeccionUsuario {
     }
     
     /**
-     * Obtiene una lista de los objetos Pokémon que el usuario tiene en su colección.
+     * Obtiene la lista de objetos Pokémon en la colección.
      */
     public List<Pokemon> obtenerPokemons() {
+        //--------
+        // Convertimos los nombres en objetos Pokémon completos
+        // usando el mapa de referencia para obtener los datos
+        //--------
         List<Pokemon> resultado = new ArrayList<>();
         for (String nombre : pokemonesUsuario) {
-            Pokemon pokemon = mapaPokemons.obtenerPokemon(nombre);
+            Pokemon pokemon = mapaReferencia.obtenerPokemon(nombre);
             if (pokemon != null) {
                 resultado.add(pokemon);
             }
@@ -71,29 +100,83 @@ public class ColeccionUsuario {
     }
     
     /**
-     * Obtiene la lista de Pokémon del usuario ordenados por tipo primario.
+     * Obtiene los Pokémon ordenados por tipo primario.
      */
     public List<Pokemon> obtenerPokemonsPorTipo() {
-        List<Pokemon> pokemons = obtenerPokemons();
-        return pokemons.stream()
-                      .sorted(Comparator.comparing(Pokemon::getType1)
-                                       .thenComparing(Pokemon::getName))
-                      .collect(Collectors.toList());
+        //--------
+        // Usa Stream API para ordenar la colección por tipo
+        // Primero por tipo principal y luego por nombre
+        //--------
+        return obtenerPokemons().stream()
+            .sorted(Comparator.comparing(Pokemon::getType1)
+                             .thenComparing(Pokemon::getName))
+            .collect(Collectors.toList());
     }
     
     /**
-     * Convierte la colección del usuario a formato JSON
+     * Encuentra los Pokémon de un tipo específico en la colección.
      */
-    public String toJson() {
+    public List<Pokemon> buscarPorTipo(String tipo) {
+        //--------
+        // Filtrado doble: busca tanto en tipo1 como en tipo2
+        // Permite encontrar todos los Pokémon que tengan ese tipo
+        // aunque no sea su tipo principal
+        //--------
+        return obtenerPokemons().stream()
+            .filter(p -> p.getType1().equalsIgnoreCase(tipo) || 
+                       (p.getType2() != null && p.getType2().equalsIgnoreCase(tipo)))
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Encuentra los Pokémon legendarios en la colección.
+     */
+    public List<Pokemon> obtenerLegendarios() {
+        //--------
+        // Filtra solo los Pokémon legendarios usando Stream API
+        //--------
+        return obtenerPokemons().stream()
+            .filter(Pokemon::isLegendary)
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene estadísticas de la colección.
+     */
+    public String obtenerEstadisticas() {
+        //--------
+        // Analiza la colección y retorna estadísticas interesantes
+        // como distribución por tipos, generaciones, etc.
+        //--------
         List<Pokemon> pokemons = obtenerPokemons();
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < pokemons.size(); i++) {
-            sb.append(pokemons.get(i).toJson());
-            if (i < pokemons.size() - 1) {
-                sb.append(",");
+        if (pokemons.isEmpty()) {
+            return "No hay Pokémon en tu colección.";
+        }
+        
+        // Contar Pokémon por generación
+        int[] generaciones = new int[9]; // Generaciones 1-8
+        for (Pokemon p : pokemons) {
+            if (p.getGeneration() >= 1 && p.getGeneration() <= 8) {
+                generaciones[p.getGeneration()]++;
             }
         }
-        sb.append("]");
-        return sb.toString();
+        
+        // Contar tipos principales
+        StringBuilder stats = new StringBuilder();
+        stats.append("=== Estadísticas de tu colección ===\n");
+        stats.append("Total de Pokémon: ").append(pokemons.size()).append("\n");
+        stats.append("Pokémon legendarios: ").append(
+            pokemons.stream().filter(Pokemon::isLegendary).count()
+        ).append("\n\n");
+        
+        stats.append("Distribución por generación:\n");
+        for (int i = 1; i <= 8; i++) {
+            if (generaciones[i] > 0) {
+                stats.append("- Gen ").append(i).append(": ")
+                     .append(generaciones[i]).append(" Pokémon\n");
+            }
+        }
+        
+        return stats.toString();
     }
 }
