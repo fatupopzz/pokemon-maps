@@ -118,7 +118,7 @@ La operación más eficiente es la búsqueda por nombre, que es O(1) con HashMap
 - Node.js (v14+)
 - npm o yarn
 
-### Backend
+### Backend (lo que pide la hoja)
 ```bash
 cd backend
 mvn clean package
