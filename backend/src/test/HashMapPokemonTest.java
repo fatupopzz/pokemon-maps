@@ -123,6 +123,7 @@ public class HashMapPokemonTest {
         assertEquals(0, sinHabilidad.size());
     }
     
+
     @Test
     public void testObtenerOrdenadosPorTipo() {
         // Agregar un Pokémon adicional del mismo tipo que uno existente

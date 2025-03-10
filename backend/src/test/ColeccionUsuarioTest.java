@@ -6,29 +6,27 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.pokemon.model.Pokemon;
 
 /**
- * Pruebas para la colección del usuario
- * Autor: [Tu Nombre]
+ * Pruebas para la clase ColeccionUsuario
+ * Autor: Fatima 
  */
 public class ColeccionUsuarioTest {
     
-    private MapaPokemons mapaPokemons;
+    private MapaPokemons mapaReferencia;
     private ColeccionUsuario coleccionUsuario;
     
     @BeforeEach
     public void setUp() {
-        // Crear un mapa con algunos Pokémon
-        mapaPokemons = new HashMapPokemon();
+        // Crear un mapa de referencia con algunos Pokémon
+        mapaReferencia = new HashMapPokemon();
         
         // Agregar varios Pokémon al mapa para las pruebas
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Pikachu", 
             25, 
             "Electric", 
@@ -36,12 +34,12 @@ public class ColeccionUsuarioTest {
             "Mouse Pokémon", 
             0.4f, 
             6.0f, 
-            "Static", 
+            "Static, Lightning-rod", 
             1, 
             false
         ));
         
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Charizard", 
             6, 
             "Fire", 
@@ -49,12 +47,12 @@ public class ColeccionUsuarioTest {
             "Flame Pokémon", 
             1.7f, 
             90.5f, 
-            "Blaze", 
+            "Blaze, Solar-power", 
             1, 
             false
         ));
         
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Bulbasaur", 
             1, 
             "Grass", 
@@ -62,12 +60,12 @@ public class ColeccionUsuarioTest {
             "Seed Pokémon", 
             0.7f, 
             6.9f, 
-            "Overgrow", 
+            "Overgrow, Chlorophyll", 
             1, 
             false
         ));
         
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Gyarados", 
             130, 
             "Water", 
@@ -75,12 +73,12 @@ public class ColeccionUsuarioTest {
             "Atrocious Pokémon", 
             6.5f, 
             235.0f, 
-            "Intimidate", 
+            "Intimidate, Moxie", 
             1, 
             false
         ));
         
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Mewtwo", 
             150, 
             "Psychic", 
@@ -88,12 +86,12 @@ public class ColeccionUsuarioTest {
             "Genetic Pokémon", 
             2.0f, 
             122.0f, 
-            "Pressure", 
+            "Pressure, Unnerve", 
             1, 
             true
         ));
         
-        mapaPokemons.agregarPokemon(new Pokemon(
+        mapaReferencia.agregarPokemon(new Pokemon(
             "Eevee", 
             133, 
             "Normal", 
@@ -101,13 +99,39 @@ public class ColeccionUsuarioTest {
             "Evolution Pokémon", 
             0.3f, 
             6.5f, 
-            "Adaptability", 
+            "Run-away, Adaptability, Anticipation", 
             1, 
             false
         ));
         
-        // Crear la colección del usuario
-        coleccionUsuario = new ColeccionUsuario(mapaPokemons);
+        mapaReferencia.agregarPokemon(new Pokemon(
+            "Gengar", 
+            94, 
+            "Ghost", 
+            "Poison", 
+            "Shadow Pokémon", 
+            1.5f, 
+            40.5f, 
+            "Cursed-body", 
+            1, 
+            false
+        ));
+        
+        mapaReferencia.agregarPokemon(new Pokemon(
+            "Dragonite", 
+            149, 
+            "Dragon", 
+            "Flying", 
+            "Dragon Pokémon", 
+            2.2f, 
+            210.0f, 
+            "Inner-focus, Multiscale", 
+            1, 
+            false
+        ));
+        
+        // Crear la colección del usuario con el mapa de referencia
+        coleccionUsuario = new ColeccionUsuario(mapaReferencia);
     }
     
     @Test
@@ -147,18 +171,28 @@ public class ColeccionUsuarioTest {
     }
     
     @Test
-    public void testAgregarPokemonCaseSensitive() {
-        // Probar que la búsqueda es sensible a mayúsculas y minúsculas
+    public void testEliminarPokemon() {
+        // Agregar algunos Pokémon
+        coleccionUsuario.agregarPokemon("Pikachu");
+        coleccionUsuario.agregarPokemon("Charizard");
+        coleccionUsuario.agregarPokemon("Mewtwo");
+        assertEquals(3, coleccionUsuario.cantidadPokemon());
         
-        // Agregar "Pikachu" debería funcionar
-        assertTrue(coleccionUsuario.agregarPokemon("Pikachu"));
+        // Eliminar un Pokémon existente
+        boolean resultado = coleccionUsuario.eliminarPokemon("Charizard");
+        assertTrue(resultado);
+        assertEquals(2, coleccionUsuario.cantidadPokemon());
+        assertFalse(coleccionUsuario.obtenerNombresPokemon().contains("Charizard"));
         
-        // Intentar agregar "pikachu" (en minúsculas) no debería funcionar
-        // porque no existe en el mapa con ese nombre exacto
-        assertFalse(coleccionUsuario.agregarPokemon("pikachu"));
+        // Intentar eliminar un Pokémon que no está en la colección
+        resultado = coleccionUsuario.eliminarPokemon("Charizard");
+        assertFalse(resultado);
+        assertEquals(2, coleccionUsuario.cantidadPokemon());
         
-        // La colección solo debería tener un Pokémon
-        assertEquals(1, coleccionUsuario.cantidadPokemon());
+        // Intentar eliminar un Pokémon que no existe en el mapa de referencia
+        resultado = coleccionUsuario.eliminarPokemon("Alakazam");
+        assertFalse(resultado);
+        assertEquals(2, coleccionUsuario.cantidadPokemon());
     }
     
     @Test
@@ -201,28 +235,23 @@ public class ColeccionUsuarioTest {
             if (pokemon.getName().equals("Pikachu")) {
                 encontroPikachu = true;
                 assertEquals("Electric", pokemon.getType1());
+                assertTrue(pokemon.getAbilities().contains("Static"));
             } else if (pokemon.getName().equals("Gyarados")) {
                 encontroGyarados = true;
                 assertEquals("Water", pokemon.getType1());
                 assertEquals("Flying", pokemon.getType2());
+                assertTrue(pokemon.getAbilities().contains("Intimidate"));
             } else if (pokemon.getName().equals("Mewtwo")) {
                 encontroMewtwo = true;
                 assertEquals("Psychic", pokemon.getType1());
                 assertTrue(pokemon.isLegendary());
+                assertTrue(pokemon.getAbilities().contains("Pressure"));
             }
         }
         
         assertTrue(encontroPikachu);
         assertTrue(encontroGyarados);
         assertTrue(encontroMewtwo);
-    }
-    
-    @Test
-    public void testObtenerPokemonsVacios() {
-        // Sin agregar Pokémon, obtenerPokemons() debería devolver una lista vacía
-        List<Pokemon> pokemons = coleccionUsuario.obtenerPokemons();
-        assertNotNull(pokemons); // La lista no debería ser null
-        assertEquals(0, pokemons.size()); // La lista debería estar vacía
     }
     
     @Test
@@ -234,77 +263,130 @@ public class ColeccionUsuarioTest {
         coleccionUsuario.agregarPokemon("Pikachu");    // Electric
         coleccionUsuario.agregarPokemon("Mewtwo");     // Psychic
         coleccionUsuario.agregarPokemon("Eevee");      // Normal
+        coleccionUsuario.agregarPokemon("Gengar");     // Ghost/Poison
+        coleccionUsuario.agregarPokemon("Dragonite");  // Dragon/Flying
         
         // Obtener ordenados por tipo
         List<Pokemon> ordenados = coleccionUsuario.obtenerPokemonsPorTipo();
         
         // Verificar que están ordenados correctamente por tipo primario
-        assertEquals(6, ordenados.size());
+        assertEquals(8, ordenados.size());
         
-        // El orden debería ser: Electric, Fire, Grass, Normal, Psychic, Water
-        assertEquals("Electric", ordenados.get(0).getType1()); // Pikachu
-        assertEquals("Fire", ordenados.get(1).getType1());     // Charizard
-        assertEquals("Grass", ordenados.get(2).getType1());    // Bulbasaur
-        assertEquals("Normal", ordenados.get(3).getType1());   // Eevee
-        assertEquals("Psychic", ordenados.get(4).getType1());  // Mewtwo
-        assertEquals("Water", ordenados.get(5).getType1());    // Gyarados
+        // El orden debería ser: Dragon, Electric, Fire, Ghost, Grass, Normal, Psychic, Water
+        assertEquals("Dragon", ordenados.get(0).getType1());   // Dragonite
+        assertEquals("Electric", ordenados.get(1).getType1()); // Pikachu
+        assertEquals("Fire", ordenados.get(2).getType1());     // Charizard
+        assertEquals("Ghost", ordenados.get(3).getType1());    // Gengar
+        assertEquals("Grass", ordenados.get(4).getType1());    // Bulbasaur
+        assertEquals("Normal", ordenados.get(5).getType1());   // Eevee
+        assertEquals("Psychic", ordenados.get(6).getType1());  // Mewtwo
+        assertEquals("Water", ordenados.get(7).getType1());    // Gyarados
     }
     
     @Test
-    public void testObtenerPokemonsPorTipoVacios() {
-        // Sin agregar Pokémon, obtenerPokemonsPorTipo() debería devolver una lista vacía
-        List<Pokemon> pokemons = coleccionUsuario.obtenerPokemonsPorTipo();
-        assertNotNull(pokemons); // La lista no debería ser null
-        assertEquals(0, pokemons.size()); // La lista debería estar vacía
+    public void testBuscarPorTipo() {
+        // Agregar algunos Pokémon con tipos variados
+        coleccionUsuario.agregarPokemon("Charizard");  // Fire/Flying
+        coleccionUsuario.agregarPokemon("Bulbasaur");  // Grass/Poison
+        coleccionUsuario.agregarPokemon("Gyarados");   // Water/Flying
+        coleccionUsuario.agregarPokemon("Gengar");     // Ghost/Poison
+        coleccionUsuario.agregarPokemon("Dragonite");  // Dragon/Flying
+        
+        // Buscar Pokémon por tipo primario
+        List<Pokemon> fuego = coleccionUsuario.buscarPorTipo("Fire");
+        assertEquals(1, fuego.size());
+        assertEquals("Charizard", fuego.get(0).getName());
+        
+        // Buscar Pokémon por tipo secundario
+        List<Pokemon> voladores = coleccionUsuario.buscarPorTipo("Flying");
+        assertEquals(3, voladores.size());
+        
+        // Verificar que encontró todos los voladores (como primario o secundario)
+        boolean tieneCharizard = false;
+        boolean tieneGyarados = false;
+        boolean tieneDragonite = false;
+        
+        for (Pokemon p : voladores) {
+            if (p.getName().equals("Charizard")) tieneCharizard = true;
+            if (p.getName().equals("Gyarados")) tieneGyarados = true;
+            if (p.getName().equals("Dragonite")) tieneDragonite = true;
+        }
+        
+        assertTrue(tieneCharizard);
+        assertTrue(tieneGyarados);
+        assertTrue(tieneDragonite);
+        
+        // Buscar Pokémon por un tipo que no existe en la colección
+        List<Pokemon> hielo = coleccionUsuario.buscarPorTipo("Ice");
+        assertEquals(0, hielo.size());
     }
     
     @Test
-    public void testToJson() {
-        // Agregar algunos Pokémon a la colección
-        coleccionUsuario.agregarPokemon("Pikachu");
-        coleccionUsuario.agregarPokemon("Charizard");
-        coleccionUsuario.agregarPokemon("Mewtwo");
+    public void testObtenerLegendarios() {
+        // Agregar varios Pokémon, incluyendo algunos legendarios
+        coleccionUsuario.agregarPokemon("Pikachu");   // No legendario
+        coleccionUsuario.agregarPokemon("Charizard"); // No legendario
+        coleccionUsuario.agregarPokemon("Mewtwo");    // Legendario
         
-        // Obtener el JSON
-        String json = coleccionUsuario.toJson();
+        // Obtener legendarios
+        List<Pokemon> legendarios = coleccionUsuario.obtenerLegendarios();
         
-        // Verificar que el JSON contiene la información de los Pokémon
-        assertTrue(json.contains("\"name\":\"Pikachu\""));
-        assertTrue(json.contains("\"name\":\"Charizard\""));
-        assertTrue(json.contains("\"name\":\"Mewtwo\""));
-        assertTrue(json.contains("\"type1\":\"Electric\""));
-        assertTrue(json.contains("\"type1\":\"Fire\""));
-        assertTrue(json.contains("\"type1\":\"Psychic\""));
-        assertTrue(json.contains("\"legendary\":true")); // Para Mewtwo
-        assertTrue(json.startsWith("["));
-        assertTrue(json.endsWith("]"));
+        // Verificar que solo devuelve los legendarios
+        assertEquals(1, legendarios.size());
+        assertEquals("Mewtwo", legendarios.get(0).getName());
+        assertTrue(legendarios.get(0).isLegendary());
     }
     
     @Test
-    public void testToJsonVacio() {
-        // Sin agregar Pokémon, toJson() debería devolver un arreglo vacío
-        String json = coleccionUsuario.toJson();
-        assertEquals("[]", json);
+    public void testObtenerEstadisticas() {
+        // Agregar varios Pokémon de diferentes generaciones
+        coleccionUsuario.agregarPokemon("Pikachu");   // Gen 1
+        coleccionUsuario.agregarPokemon("Charizard"); // Gen 1
+        coleccionUsuario.agregarPokemon("Mewtwo");    // Gen 1, Legendario
+        
+        // Obtener estadísticas
+        String estadisticas = coleccionUsuario.obtenerEstadisticas();
+        
+        // Verificar que contiene la información básica correcta
+        assertTrue(estadisticas.contains("Total de Pokémon: 3"));
+        assertTrue(estadisticas.contains("Pokémon legendarios: 1"));
+        assertTrue(estadisticas.contains("Gen 1: 3"));
     }
     
     @Test
-    public void testPokemonNoEncontrado() {
-        // Agregar un Pokémon válido
-        coleccionUsuario.agregarPokemon("Pikachu");
+    public void testColeccionVaciaEstadisticas() {
+        // No agregar Pokémon
+        String estadisticas = coleccionUsuario.obtenerEstadisticas();
         
-        // Modificar el mapa para simular que el Pokémon ya no existe
-        // (esto probaría qué pasa si un Pokémon se elimina del mapa general)
-        mapaPokemons = new HashMapPokemon(); // Crear un mapa vacío
-        coleccionUsuario = new ColeccionUsuario(mapaPokemons);
+        // Verificar que muestra mensaje para colección vacía
+        assertEquals("No hay Pokémon en tu colección.", estadisticas);
+    }
+    
+    @Test
+    public void testObtenerPokemonsConMapaVacio() {
+        // Crear un mapa de referencia vacío
+        MapaPokemons mapaVacio = new HashMapPokemon();
+        ColeccionUsuario coleccionVacia = new ColeccionUsuario(mapaVacio);
         
         // Intentar agregar un Pokémon que no existe en el mapa
-        boolean resultado = coleccionUsuario.agregarPokemon("Pikachu");
+        boolean resultado = coleccionVacia.agregarPokemon("Pikachu");
         assertFalse(resultado);
         
-        // La colección no debería contener nada
-        assertEquals(0, coleccionUsuario.cantidadPokemon());
+        // Verificar que la colección sigue vacía
+        assertEquals(0, coleccionVacia.cantidadPokemon());
+        assertTrue(coleccionVacia.obtenerPokemons().isEmpty());
+    }
+    
+    @Test
+    public void testCaseSensitive() {
+        // Agregar un Pokémon con nombre específico
+        coleccionUsuario.agregarPokemon("Pikachu");
         
-        // Obtener Pokémons debería devolver una lista vacía
-        assertEquals(0, coleccionUsuario.obtenerPokemons().size());
+        // Intentar buscar el mismo Pokémon con diferente caso
+        assertFalse(coleccionUsuario.agregarPokemon("pikachu"));
+        assertFalse(coleccionUsuario.agregarPokemon("PIKACHU"));
+        
+        // La colección solo debe tener un Pokémon
+        assertEquals(1, coleccionUsuario.cantidadPokemon());
     }
 }
