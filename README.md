@@ -10,7 +10,7 @@ Este proyecto implementa un explorador de datos de Pokémon utilizando el concep
 
 El objetivo principal de este proyecto es demostrar la implementación y uso de diferentes tipos de Maps (HashMap, TreeMap y LinkedHashMap) para almacenar y manipular datos de Pokémon. La aplicación permite visualizar, buscar y filtrar información de Pokémon de manera eficiente.
 
-### esta hoja tiene
+## Características principales
 
 1. **Implementación de Maps**: Se implementaron las tres variantes de Map solicitadas:
    - **HashMap**: Acceso rápido O(1), sin orden específico
@@ -19,7 +19,7 @@ El objetivo principal de este proyecto es demostrar la implementación y uso de 
 
 2. **Patrón Factory**: Utilizado para seleccionar la implementación de Map en tiempo de ejecución.
 
-3. **Operaciones solicitadas**:
+3. **Operaciones implementadas**:
    - Agregar un Pokémon a la colección del usuario
    - Mostrar datos de un Pokémon específico
    - Mostrar la colección del usuario ordenada por tipo
@@ -34,12 +34,27 @@ El objetivo principal de este proyecto es demostrar la implementación y uso de 
 pokemon-explorer/
 ├── backend/
 │   ├── src/
-│   │   ├── main/
-│   │   │   └── java/com/pokemon/
-│   │   │       ├── model/
-│   │   │       ├── service/
-│   │   │       └── util/
-│   │   └── test/
+│   │   ├── main/java/com/pokemon/
+│   │   │   ├── model/
+│   │   │   │   └── Pokemon.java
+│   │   │   ├── service/
+│   │   │   │   ├── MapaPokemons.java
+│   │   │   │   ├── HashMapPokemon.java
+│   │   │   │   ├── TreeMapPokemon.java
+│   │   │   │   ├── LinkedHashMapPokemon.java
+│   │   │   │   ├── PokemonMapFactory.java
+│   │   │   │   └── ColeccionUsuario.java
+│   │   │   ├── util/
+│   │   │   │   └── LectorCSV.java
+│   │   │   └── Main.java
+│   │   └── test/java/com/pokemon/
+│   │       ├── service/
+│   │       │   ├── HashMapPokemonTest.java
+│   │       │   ├── TreeMapPokemonTest.java
+│   │       │   ├── LinkedHashMapPokemonTest.java
+│   │       │   └── ColeccionUsuarioTest.java
+│   │       └── model/
+│   │           └── PokemonTest.java
 │   └── data/
 │       └── pokemon_data_pokeapi.csv
 ├── frontend/
@@ -101,24 +116,23 @@ public class PokemonMapFactory {
 
 Para la operación #4 (mostrar todos los Pokémon ordenados por tipo):
 
-- **Con HashMap**: O(n log n) debido a la necesidad de ordenar los elementos
-- **Con TreeMap**: O(n log n) para ordenar por tipo (diferente a la clave original)
-- **Con LinkedHashMap**: O(n log n) también requiere ordenamiento adicional
+- **HashMap**: O(n log n) debido a la necesidad de ordenar los elementos
+- **TreeMap**: O(n log n) para ordenar por tipo (diferente a la ordenación por nombre que ya mantiene)
+- **LinkedHashMap**: O(n log n) también requiere ordenamiento adicional
 
-La operación más eficiente es la búsqueda por nombre, que es O(1) con HashMap, O(log n) con TreeMap y O(1) con LinkedHashMap.
+La complejidad es O(n log n) para todas las implementaciones debido al paso de ordenamiento, independientemente de la estructura de datos subyacente.
 
 ## Demo en vivo (es un simulador)
 
-[En githubpages ](https://fatupopzz.github.io/pokemon-maps)
+[En githubpages](https://fatupopzz.github.io/pokemon-maps)
 
 ## Instalación y Ejecución Local
 
 ### Prerequisitos
 - Java 11 o superior
-- Node.js (v14+)
-- npm o yarn
+- Maven
 
-### Backend (lo que pide la hoja)
+### Backend
 ```bash
 cd backend
 mvn clean package
@@ -136,12 +150,19 @@ npm start
 
 Se implementaron pruebas unitarias para verificar el correcto funcionamiento de las operaciones principales:
 
-1. **Prueba de agregación de Pokémon a la colección**
-2. **Prueba de búsqueda de Pokémon por nombre**
+1. **HashMapPokemonTest**: Verifica las operaciones básicas con la implementación HashMap
+2. **TreeMapPokemonTest**: Prueba la implementación TreeMap y su ordenamiento
+3. **LinkedHashMapPokemonTest**: Comprueba el mantenimiento del orden de inserción
+4. **ColeccionUsuarioTest**: Prueba las operaciones de la colección personal del usuario
+5. **PokemonTest**: Valida la creación y manipulación de objetos Pokémon
+
+## Autor
+
+Fatima Navarro - 24044
 
 ## Referencias 
 
-Claude 
-
-
+- Java Collection Framework Documentation
+- PokeAPI para los datos originales
+- Claude para algunas implementaciones avanzadas
 
